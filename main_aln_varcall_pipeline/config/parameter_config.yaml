@@ -1,0 +1,87 @@
+# parameter_config.yaml
+
+# REFERENCE GENOMES
+reference_genome_for_bwa: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/Homo_sapiens/NCBI/GRCh38/Sequence/BWAIndex/genome.fa
+reference_genome_for_gatk: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa
+
+## need to update this to include both absolute path and module name so that module can be loaded within the cluster job? otherwise loading all the modules up front is slow and causing conflicts?
+# MAIN PACKAGE DEPENDENCIES (load from modules prior to executing snakemake; updated for bionic OS)
+bwa: /app/software/BWA/0.7.17-GCC-10.2.0/bin/bwa # /app/software/BWA/0.7.17-GCC-8.3.0/bin/bwa # /app/easybuild/software/BWA/0.7.17-foss-2018b/bin/bwa #  # /app/easybuild/software/BWA/0.7.17-foss-2016b/bin/bwa
+samtools: /app/software/SAMtools/1.11-GCC-10.2.0/bin/samtools # /app/software/SAMtools/1.10-GCCcore-8.3.0/bin/samtools # /app/easybuild/software/SAMtools/1.10-foss-2016b/bin/samtools
+gatk: /app/software/GATK/4.2.2.0-GCCcore-10.2.0-Java-11/gatk # /app/software/GATK/4.1.8.1-GCCcore-8.3.0-Java-11/gatk # GATK/4.1.4.1-GCCcore-8.3.0-Java-11 # /app/easybuild/software/GATK/4.1.4.1-foss-2016b-Python-3.7.4/gatk
+picard_jar: $EBROOTPICARD/picard.jar # (picard/2.25.0-Java-11)
+fgbio_jar: /home/jhiatt/usr/bin/miniconda3/share/fgbio/fgbio.jar
+python: /home/jhiatt/usr/bin/miniconda3/bin/python # thought i needed virtual env to get snakemake installed but maybe i dont? /home/jhiatt/usr/bin/miniconda3/envs/snakemake/bin/python
+strelka_install_path: /app/software/strelka/2.9.9-foss-2018b/bin/
+manta_install_path: /app/software/manta/1.6.0/bin/
+
+# PACKAGE COMMAND LINE ARGUMENTS
+bwa_threads: 4
+default_gatk_mem: 7500M # a little less than slurm config which defaults to 8G
+# markdup_threads: 4 
+pon_genomics_db_import_chrs: "-L chr1 -L chr2 -L chr3 -L chr4 -L chr5 -L chr6 -L chr7 -L chr8 -L chr9 -L chr10 -L chr11 -L chr12 -L chr13 -L chr14 -L chr15 -L chr16 -L chr17 -L chr18 -L chr19 -L chr20 -L chr21 -L chr22 -L chrX"
+mutect2_germline_resource: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Broad_GATK/af-only-gnomad.hg38.vcf.gz
+funcotator_ref_version: hg38
+funcotator_data_sources: /home/jhiatt/outside_data/Broad_GATK/funcotator_dataSources.v1.6.20190124s/
+fgbio_read_structure: 8M+T 8M+T
+
+# SUPPLEMENTARY FILES FOR GATK
+base_recal_known_sites:
+- /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Broad_GATK/resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf
+- /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Broad_GATK/resources_broad_hg38_v0_Homo_sapiens_assembly38.known_indels.vcf.gz
+- /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Broad_GATK/resources_broad_hg38_v0_Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+
+# METRICS
+metrics:
+    collect_hs_metrics:
+        tss:
+            regions: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/BOTH_panels_99203579_95366096.interval_list # why do I have BOTH here?? (01/2022)
+            probes: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/gapped_design_FHCRC_TSSv1_TE-95366096_hg38_190910161313.interval_list
+            target: tss
+        tfbs_g:
+            regions: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212733.interval_list
+            probes: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/gapped_design_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212628.interval_list
+            target: tfbs_g
+        all:
+            regions: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/BOTH_panels_99203579_95366096.interval_list
+            probes: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/BOTH_panels_probes_99203579_95366096.interval_list
+            target: all
+        coding_only:
+            regions: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212733.targeted_gene_regions_only.merged.interval_list
+            probes: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212733.targeted_gene_regions_only.merged.interval_list
+            target: coding_only
+    collect_alnmt_metrics:
+        before_mouse_removal: 
+            fasta: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa
+            path_string: before_mouse_removal
+        after_mouse_removal: 
+            fasta: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa
+            path_string: base_recalibration
+
+# ConcatRef
+reference_genome_for_concatref: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/concatRef/GRCm38_and_GRCh38.fa # see README.txt in that path
+concatref_human_chromosome_bed: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/concatRef/human_chroms.bed"" # see README.txt in that path
+
+# STRELKA
+strelka_regions: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/shared_cfDNA/strelka_regions_hg38.bed.gz
+
+# CNVKIT
+cnvkit_install_path: /app/software/CNVkit/0.9.7-foss-2019b-Python-3.7.4-R-3.6.2/bin/cnvkit.py
+cnvkit_refflat: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/refFlat.txt
+cnvkit_tfbs_g_probes: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/FHutch_SCLCgenes_TFBS_TE-99203579_hg38/gapped_design_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212628.bed
+# cnvkit.py access /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/reference/human/grch38/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa -o ~/lsd_home/shared_cfDNA/CNVkit.access.excludeTSS.bed -x /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/FHCRC_TSSv1_TE-95366096_hg38/gapped_design_FHCRC_TSSv1_TE-95366096_hg38_190910161313.bed -s 300
+cnvkit_access_excludeTSS: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/shared_cfDNA/CNVkit.access.excludeTSS.bed
+cnvkit_default_mem: 32G
+
+# SCRIPTS
+parse_funcotator_vcf_script: /home/jhiatt/lsd_home/shared_cfDNA/VARCALL_parse_VCF.v3.py
+parse_funcotator_on_strelka_vcf_script: /home/jhiatt/lsd_home/shared_cfDNA/VARCALL_Strelka2_parse_VCF.v1.py
+
+# OLD
+# capture_panel_regions__coding_only: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212733.targeted_gene_regions_only.merged.interval_list
+# capture_panel_regions__all: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/BOTH_panels_99203579_95366096.interval_list
+# capture_panel_probes__all: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/BOTH_panels_probes_99203579_95366096.interval_list
+# capture_panel_regions__tfbs_g: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212733.interval_list
+# capture_panel_probes__tfbs_g: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/gapped_design_FHutch_SCLCgenes_TFBS_TE-99203579_hg38_190826212628.interval_list
+# capture_panel_probes__tss: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/gapped_design_FHCRC_TSSv1_TE-95366096_hg38_190910161313.interval_list
+# capture_panel_regions__tss: /fh/fast/macpherson_d/grp/labshareddata/joe_hiatt/outside_data/Twist/modified_jbh/all_target_segments_covered_by_probes_FHCRC_TSSv1_TE-95366096_hg38_190910161420.interval_list

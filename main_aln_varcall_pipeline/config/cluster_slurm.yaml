@@ -1,0 +1,79 @@
+__default__:
+    partition: campus-new
+    time: "120:0:0"
+    mem: 8G
+    ncpus: 2
+    ntasks: 1
+    JobName: "{rule}.{wildcards.library}"
+    output: "./logs/slurm_logs/{rule}.{wildcards.library}.%A.out" # !!! path for log files MUST pre-exist !!!
+
+concatenate_fastq_files:
+    JobName: "{rule}.{wildcards.fastq}"
+    output: "./logs/slurm_logs/{rule}.{wildcards.fastq}.%A.out"
+
+concatenate_fastq_files_idtxgen:
+    JobName: "{rule}.{wildcards.fastq}"
+    output: "./logs/slurm_logs/{rule}.{wildcards.fastq}.%A.out"
+
+align_to_reference:
+    ncpus: 4
+    mem: 16G
+
+align_to_reference_idtxgen:
+    ncpus: 4
+    mem: 16G
+
+merge_same_sample_bams:
+    JobName: "{rule}.{wildcards.bams_to_merge}"
+    output: "./logs/slurm_logs/{rule}.{wildcards.bams_to_merge}.%A.out"
+    
+merge_same_sample_bams_idtxgen:
+    JobName: "{rule}.{wildcards.library}"
+    output: "./logs/slurm_logs/{rule}.{wildcards.library}.%A.out"
+
+sort_and_index_concatref_bam:
+    ncpus: 4
+    mem: 16G
+
+realign_cleaned_bam_to_human:
+    ncpus: 4
+    mem: 16G
+
+mark_duplicates:
+    ncpus: 4
+    mem: 16G
+
+# mutect2_for_panel_of_normals:
+#     #     ncpus: 1
+#     JobName: "{rule}.{wildcards.benign_lib_for_mutect_pon}.%A"
+#     output: "./logs/slurm_logs/{rule}.{wildcards.benign_lib_for_mutect_pon}.%A.out"    
+
+pon_genomics_db_import:
+    JobName: "{rule}"
+    output: "./logs/slurm_logs/{rule}.%A.out"
+
+create_somatic_pons:
+    JobName: "{rule}"
+    output: "./logs/slurm_logs/{rule}.%A.out"
+
+funcotator:
+    ncpus: 4
+    mem: 16G
+    
+cnvkit_batch_benign_normal:
+    JobName: "{rule}"
+    output: "./logs/slurm_logs/{rule}.%A.out"
+    ncpus: 24
+    mem: 48G
+    
+cnvkit_batch_flat_normal:
+    JobName: "{rule}"
+    output: "./logs/slurm_logs/{rule}.%A.out"
+    ncpus: 24
+    mem: 48G
+
+cnvkit_batch_pbmc_normal:
+    JobName: "{rule}"
+    output: "./logs/slurm_logs/{rule}.%A.out"
+    ncpus: 24
+    mem: 48G
